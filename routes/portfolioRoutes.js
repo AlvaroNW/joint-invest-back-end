@@ -1,12 +1,19 @@
 import { Router } from "express";
-import * as portfolioController from "../controllers/portfolioController.js";
+<<<<<<< HEAD
+import {
+  getPortfolio,
+  getStock,
+  postTransaction,
+  putTransaction,
+} from "../controllers/portfolioController.js";
 
-const portfolioRoutes = Router();
+const portfolioRoute = Router();
 
-portfolioRoutes.route("/").get(portfolioController.findAllPortfolios);
+portfolioRoute.route("/:portfolio_id").get(getPortfolio);
+portfolioRoute.route("/:portfolio_id/:ticker").get(getStock);
+portfolioRoute.route("/transaction/:portfolio_id/").post(postTransaction);
+portfolioRoute
+  .route("/transaction/:portfolio_id/:transaction_id")
+  .put(putTransaction);
 
-portfolioRoutes
-  .route("/:userId")
-  .get(portfolioController.findAllUserSPortfolios);
-
-export default portfolioRoutes;
+export default portfolioRoute;

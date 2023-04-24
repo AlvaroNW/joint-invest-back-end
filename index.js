@@ -1,19 +1,22 @@
-import Express, { Router } from "express";
-import pkg from "./DB/client.js";
+import Express from "express";
 import bodyParser from "body-parser";
-import portfolioRoutes from "./routes/portfolioRoutes.js";
-import cors from "cors"
+import cors from "cors";
+import portfolioRoute from "./routes/portfolioRoutes.js";
+import orderbookRoute from "./routes/orderbookRoute.js";
+import overviewRoutes from "./routes/overviewRoute.js";
 
 const app = Express();
+
 app.use(cors());
+app.use(Express.json());
 app.use(bodyParser.json());
+
 const port = 3000;
 
-// app.get('/', (req, res) => {
-//   res.send('Backend for Joint Invest - from the Beehive with &#x2764;&#xFE0F;!')
-// })
+app.use("/api/order_book", orderbookRoute);
+app.use("/api/portfolio", portfolioRoute);
+app.use("/api/overview", overviewRoutes);
 
-app.use("/", portfolioRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
