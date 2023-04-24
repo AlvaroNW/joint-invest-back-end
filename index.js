@@ -1,6 +1,7 @@
 
-const express = require('express')
-const app = express()
+import Express, { Router } from "express";
+
+const app = Express()
 const port = 3000
 
 app.get('/', (req, res) => {
