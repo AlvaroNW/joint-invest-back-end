@@ -4,8 +4,6 @@ import pkg from './DB/client.js'
 import bodyParser from 'body-parser'
 
 
-
-
 const app = Express()
 app.use(bodyParser.json())
 const port = 3000
