@@ -5,7 +5,7 @@ const getTransactions = async (req, res, next) => {
     const { portfolio_id } = req.params;
 
     const getStocksDisplay =
-      "SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY creating_date DESC) AS rn FROM Transactions) t WHERE rn = 1 AND portfolio_id = $1 ORDER BY creating_date DESC";
+      "SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY creating_date DESC) AS rn FROM transactions WHERE portfolio_id = $1) t WHERE rn = 1";
     const { rows: newQuery } = await pool.query(getStocksDisplay, [
       portfolio_id,
     ]);
@@ -60,20 +60,27 @@ const putTransaction = async (req, res, next) => {
       res.status(200).json(updatedRow);
     }
     if (transaction_status == "confirmed") {
-      const callQuery = "SELECT * FROM Portfolio WHERE id = $1";
-      const { rows: myUpdates } = await pool.query(callQuery, [portfolio_id]);
+      const callQuery =
+        "SELECT * FROM Transactions WHERE portfolio_id = $1 AND id = $2";
+      const { rows: myUpdates } = await pool.query(callQuery, [
+        portfolio_id,
+        transaction_id,
+      ]);
       const {
         type_of_transaction: buyOrSell,
         number_of_shares: amountBuyOrSell,
-      } = myUpdates;
+      } = myUpdates[0];
+      console.log({ buyOrSell: buyOrSell });
+      console.log({ amountBuyOrSell: amountBuyOrSell });
 
       const newAmount = amountBuyOrSell * current_price_of_share;
+      console.log({ newAmount: newAmount });
       const writeToPortfolio = "SELECT * FROM Portfolio WHERE id = $1";
       const { rows: getPortfolio } = await pool.query(writeToPortfolio, [
         portfolio_id,
       ]);
       const { invested_amount: invAmount, available_amount: availAmount } =
-        getPortfolio;
+        getPortfolio[0];
 
       if (buyOrSell == "Buy") {
         const newInvestedAmount = invAmount + newAmount;
