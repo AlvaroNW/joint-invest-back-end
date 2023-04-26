@@ -21,13 +21,20 @@ const createPortfolio = async (req, res) => {
       throw new Error();
     }
 
-    // //if usernameId = friendId then it should not be possible to create a portfolio
-    // let usernameId = parseInt(findFriend[0].id);
+    //if usernameId = friendId then it should not be possible to create a portfolio
+    const { rows: findUsernameId } = await pool.query(
+      "SELECT id FROM users WHERE username=$1",
+      [friend_username]
+    );
+    let usernameId = parseInt(findUsernameId[0].id);
+    let userIdInt = parseInt(userId);
 
-    // if (userId === usernameId) {
-    //   res.json("identical ids");
-    //   throw new Error();
-    // }
+    if (userIdInt === usernameId) {
+      res.json("identical ids");
+      throw new Error();
+    } else {
+      res.json("else is working");
+    }
 
     //   creation of a new portfolio
     const { rows: newPortfolio } = await pool.query(
