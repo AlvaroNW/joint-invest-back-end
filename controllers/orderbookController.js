@@ -13,7 +13,7 @@ const getOrders = async (req, res, next) => {
 
     res.json(transactionList);
   } catch (e) {
-    res.json({ error: e.message });
+    next({ message: e.message });
   }
 };
 

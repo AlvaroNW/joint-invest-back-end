@@ -19,7 +19,7 @@ const getStock = async (req, res, next) => {
 
     res.json(stockData);
   } catch (e) {
-    res.json({ error: e.message });
+    next({ message: e.message });
   }
 };
 
