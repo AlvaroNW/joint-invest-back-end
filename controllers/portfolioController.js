@@ -23,7 +23,7 @@ const getPortfolio = async (req, res, next) => {
     const portfolioInfo = { overview: portfolioData, stocks: stockData };
     res.json(portfolioInfo);
   } catch (e) {
-    next({ message: e.message });
+    next(e.message);
   }
 };
 
