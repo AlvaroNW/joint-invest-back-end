@@ -9,6 +9,8 @@ import {
   validateTransactionInput,
   findOneTransaction,
   findMatchingPortfolio,
+  enoughMoneyPost,
+  enoughMoneyPut,
 } from "../middleware/validateTransaction.js";
 
 const transactionRoute = Router();
@@ -20,10 +22,11 @@ transactionRoute
     checkEmptyTransactionPost,
     validateTransactionInput,
     findMatchingPortfolio,
+    enoughMoneyPost,
     postTransaction
   );
 transactionRoute
   .route("/:portfolio_id/:transaction_id")
-  .put(findOneTransaction, putTransaction);
+  .put(findOneTransaction, enoughMoneyPut, putTransaction);
 
 export default transactionRoute;

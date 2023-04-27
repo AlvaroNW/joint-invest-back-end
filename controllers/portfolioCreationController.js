@@ -1,6 +1,6 @@
 import pool from "../DB/client.js";
 
-const createPortfolio = async (req, res) => {
+const createPortfolio = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { initial_amount, name_of_portfolio, friend_username } = req.body;
@@ -74,8 +74,8 @@ const createPortfolio = async (req, res) => {
       newUsertoportfolioForUser,
       newUsertoportfolioForFriend,
     });
-  } catch (error) {
-    console.log(error.message);
+  } catch (e) {
+    next({ message: e.message });
   }
 };
 

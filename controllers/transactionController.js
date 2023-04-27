@@ -11,7 +11,7 @@ const getTransactions = async (req, res, next) => {
     ]);
     res.json(newQuery);
   } catch (e) {
-    res.json({ error: e.message });
+    next({ message: e.message });
   }
 };
 
@@ -41,7 +41,7 @@ const postTransaction = async (req, res, next) => {
     ]);
     res.status(201).json(newTransaction);
   } catch (e) {
-    res.json({ error: e.message });
+    next({ message: e.message });
   }
 };
 
@@ -122,7 +122,7 @@ const putTransaction = async (req, res, next) => {
       });
     }
   } catch (e) {
-    res.json({ error: e.message });
+    next({ message: e.message });
   }
 };
 
