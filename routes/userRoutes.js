@@ -23,7 +23,7 @@ userRoute.post(
   checkUniqueUser,
   signUpUser
 );
-userRoute.post("/signin", checkEmptyLogin, findOneUser, signInUser);
+userRoute.post("/login", checkEmptyLogin, findOneUser, signInUser);
 userRoute.get("/all", getUsers);
 userRoute.get("/me", verifyToken, getOneUser);
 

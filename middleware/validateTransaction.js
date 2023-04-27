@@ -62,7 +62,7 @@ const findOneTransaction = async (req, res, next) => {
       return next({ message: "transaction not found" });
     return next();
   } catch (e) {
-    next({ message: e.message });
+    next(e.message);
   }
 };
 
@@ -82,46 +82,54 @@ const findMatchingPortfolio = async (req, res, next) => {
   }
 };
 const enoughMoneyPost = async (req, res, next) => {
-  const { portfolio_id } = req.params;
-  const {
-    number_of_shares,
-    company_id,
-    type_of_transaction,
-    company_name,
-    price_of_share,
-    user_id,
-  } = req.body;
-  if (type_of_transaction == "Sell") return next();
-  const seePortfolio = "SELECT * FROM Portfolio WHERE id = $1";
-  const { rows: portfolioData } = await pool.query(seePortfolio, [
-    portfolio_id,
-  ]);
-  const checkMoney =
-    portfolioData[0].available_amount - price_of_share * number_of_shares;
-  if (checkMoney < 0) return next({ message: "Not enough money left" });
-  return next();
+  try {
+    const { portfolio_id } = req.params;
+    const {
+      number_of_shares,
+      company_id,
+      type_of_transaction,
+      company_name,
+      price_of_share,
+      user_id,
+    } = req.body;
+    if (type_of_transaction == "Sell") return next();
+    const seePortfolio = "SELECT * FROM Portfolio WHERE id = $1";
+    const { rows: portfolioData } = await pool.query(seePortfolio, [
+      portfolio_id,
+    ]);
+    const checkMoney =
+      portfolioData[0].available_amount - price_of_share * number_of_shares;
+    if (checkMoney < 0) return next({ message: "Not enough money left" });
+    return next();
+  } catch (e) {
+    next(e.message);
+  }
 };
 
 const enoughMoneyPut = async (req, res, next) => {
-  const { portfolio_id, transaction_id } = req.params;
-  const { transaction_status, current_price_of_share } = req.body;
+  try {
+    const { portfolio_id, transaction_id } = req.params;
+    const { transaction_status, current_price_of_share } = req.body;
 
-  const seeTransaction = "SELECT * FROM Transactions WHERE id = $1";
-  const { rows: transactionData } = await pool.query(seeTransaction, [
-    transaction_id,
-  ]);
-  if (transactionData[0].type_of_transaction == "Sell") return next();
+    const seeTransaction = "SELECT * FROM Transactions WHERE id = $1";
+    const { rows: transactionData } = await pool.query(seeTransaction, [
+      transaction_id,
+    ]);
+    if (transactionData[0].type_of_transaction == "Sell") return next();
 
-  const seePortfolio = "SELECT * FROM Portfolio WHERE id = $1";
-  const { rows: portfolioData } = await pool.query(seePortfolio, [
-    portfolio_id,
-  ]);
-  const checkMoney =
-    portfolioData[0].available_amount -
-    current_price_of_share * transactionData[0].number_of_shares;
+    const seePortfolio = "SELECT * FROM Portfolio WHERE id = $1";
+    const { rows: portfolioData } = await pool.query(seePortfolio, [
+      portfolio_id,
+    ]);
+    const checkMoney =
+      portfolioData[0].available_amount -
+      current_price_of_share * transactionData[0].number_of_shares;
 
-  if (checkMoney < 0) return next({ message: "Not enough money left" });
-  return next();
+    if (checkMoney < 0) return next({ message: "Not enough money left" });
+    return next();
+  } catch (e) {
+    next(e.message);
+  }
 };
 
 export {

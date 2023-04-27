@@ -5,7 +5,7 @@ export const findAllPortfolios = async (req, res, next) => {
     const { rows: portfolios } = await pool.query("SELECT * FROM portfolio");
     return res.json(portfolios);
   } catch (e) {
-    next({ message: e.message });
+    next(e.message);
   }
 };
 
@@ -25,6 +25,6 @@ export const findAllUserSPortfolios = async (req, res, next) => {
       portfoliosDetails: portfolioWalletDetails,
     });
   } catch (e) {
-    next({ message: e.message });
+    next(e.message);
   }
 };
