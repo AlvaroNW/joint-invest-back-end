@@ -27,4 +27,23 @@ const getPortfolio = async (req, res, next) => {
   }
 };
 
-export { getPortfolio };
+const deletePortfolio = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { id } = req.params;
+
+    const queryRetrieveData = "SELECT * from portfolio WHERE id=$1";
+    const queryDeletion =
+      "UPDATE portfolio SET status = 'pending' WHERE id = $1;";
+
+    const { rows: portfolioData } = await pool.query(queryRetrieveData, [id]);
+    const { rows: portfolioDeleted } = await pool.query(queryDeletion, [id]);
+
+    return res.json(portfolioDeleted, portfolioData);
+  } catch (error) {
+    res.json({ error: e.message });
+  }
+};
+
+export { getPortfolio, deletePortfolio };

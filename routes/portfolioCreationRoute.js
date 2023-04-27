@@ -5,6 +5,7 @@ const portfolioCreationRoutes = Router();
 
 portfolioCreationRoutes
   .route("/:userId")
-  .post(PCreationController.createPortfolio);
+  .post(PCreationController.createPortfolio)
+  .get(PCreationController.getAllUsernames);
 
 export default portfolioCreationRoutes;

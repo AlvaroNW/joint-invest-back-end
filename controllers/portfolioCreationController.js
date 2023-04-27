@@ -1,5 +1,14 @@
 import pool from "../DB/client.js";
 
+const getAllUsernames = async (req, res) => {
+  try {
+    const { rows: users } = await pool.query("SELECT id, username FROM users");
+    return res.json(users);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const createPortfolio = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -79,4 +88,4 @@ const createPortfolio = async (req, res) => {
   }
 };
 
-export { createPortfolio };
+export { createPortfolio, getAllUsernames };
