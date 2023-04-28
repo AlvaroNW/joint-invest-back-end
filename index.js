@@ -22,8 +22,9 @@ app.use("/api/portfolio", portfolioRoute);
 app.use("/api/overview", overviewRoutes);
 app.use("/api/transaction", transactionRoute);
 app.use("/api/creation_portfolio", portfolioCreationRoutes);
-app.use(errorHandler);
 app.use("/api/user", userRoute);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

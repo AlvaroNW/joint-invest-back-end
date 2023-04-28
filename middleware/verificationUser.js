@@ -13,8 +13,7 @@ const verifyToken = async (req, res, next) => {
     console.log(id);
     const myQuery = "SELECT * FROM Users WHERE id = $1";
     const { rows: user } = await pool.query(myQuery, [id]);
-    console.log(user);
-    req.user = user;
+    req.user = user[0];
     next();
   } catch (e) {
     return next(e.message);
