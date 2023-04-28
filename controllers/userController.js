@@ -10,7 +10,7 @@ const signUpUser = async (req, res, next) => {
 
     const hash = await bcrypt.hash(password, saltRounds);
     const myQuery =
-      "INSERT INTO Users (email, password, username) VALUES ($1, $2, $3) RETURNING *";
+      "INSERT INTO Users (email, password, username) VALUES ($1, $2, $3)";
     const { rows: newUser } = await pool.query(myQuery, [
       email,
       hash,
@@ -20,7 +20,7 @@ const signUpUser = async (req, res, next) => {
     const { rows: theInfo } = await pool.query(myNewQuery, [email]);
 
     const token = jwt.sign({ id: theInfo[0].id }, process.env.JWT_SECRET);
-    return res.status(201).json(token);
+    return res.status(201).send({ token: token, user_id: theInfo[0].id });
   } catch (e) {
     next(e.message);
   }
@@ -34,7 +34,7 @@ const signInUser = async (req, res, next) => {
     const match = await bcrypt.compare(password, user[0].password);
     if (!match) return next({ message: "Wrong password" });
     const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET);
-    res.json(token);
+    return res.status(201).send({ token: token, user_id: user[0].id });
   } catch (e) {
     next(e.message);
   }
