@@ -6,7 +6,7 @@ const getOrders = async (req, res, next) => {
     const user_id = 1;
 
     const doneTransactions =
-      "SELECT * FROM Transactions WHERE status = 'confirmed' AND portfolio_id = $1";
+      "SELECT * FROM Transactions WHERE status = 'confirmed' AND portfolio_id = $1 ORDER BY creating_date DESC";
     const { rows: transactionList } = await pool.query(doneTransactions, [
       portfolio_id,
     ]);
