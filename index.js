@@ -7,6 +7,7 @@ import overviewRoutes from "./routes/overviewRoute.js";
 import transactionRoute from "./routes/transactionRoute.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import portfolioCreationRoutes from "./routes/portfolioCreationRoute.js";
+import userRoute from "./routes/userRoutes.js";
 
 const app = Express();
 
@@ -21,6 +22,8 @@ app.use("/api/portfolio", portfolioRoute);
 app.use("/api/overview", overviewRoutes);
 app.use("/api/transaction", transactionRoute);
 app.use("/api/creation_portfolio", portfolioCreationRoutes);
+app.use("/api/user", userRoute);
+
 app.use(errorHandler);
 
 app.listen(port, () => {

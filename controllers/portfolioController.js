@@ -28,7 +28,7 @@ const getPortfolio = async (req, res, next) => {
     };
     res.json(portfolioInfo);
   } catch (e) {
-    res.json({ error: e.message });
+    next(e.message);
   }
 };
 

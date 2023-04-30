@@ -8,10 +8,12 @@ const verifyToken = async (req, res, next) => {
     } = req;
     if (!authorization) return next("please login");
     const token = authorization.split(" ")[1];
+    console.log(token);
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(id);
     const myQuery = "SELECT * FROM Users WHERE id = $1";
     const { rows: user } = await pool.query(myQuery, [id]);
-    req.user = user;
+    req.user = user[0];
     next();
   } catch (e) {
     return next(e.message);

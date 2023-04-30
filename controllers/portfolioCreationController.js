@@ -11,7 +11,7 @@ const getAllUsernames = async (req, res) => {
   }
 };
 
-const createPortfolio = async (req, res) => {
+const createPortfolio = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { initial_amount, name_of_portfolio, friend_username } =
@@ -29,8 +29,7 @@ const createPortfolio = async (req, res) => {
     let numberOfFriend = parseInt(findFriend[0].number_of_friends);
 
     if (numberOfFriend === 0) {
-      res.json('user not found');
-      throw new Error();
+      next({ message: 'user not found' });
     }
 
     //if usernameId = friendId then it should not be possible to create a portfolio
@@ -42,10 +41,9 @@ const createPortfolio = async (req, res) => {
     let userIdInt = parseInt(userId);
 
     if (userIdInt === usernameId) {
-      res.json('identical ids');
-      throw new Error();
+      next({ message: 'identical ids' });
     } else {
-      res.json('else is working');
+      next({ message: 'else is working' });
     }
 
     //   creation of a new portfolio
@@ -86,8 +84,8 @@ const createPortfolio = async (req, res) => {
       newUsertoportfolioForUser,
       newUsertoportfolioForFriend,
     });
-  } catch (error) {
-    console.log(error.message);
+  } catch (e) {
+    next(e.message);
   }
 };
 
