@@ -48,8 +48,8 @@ const createPortfolio = async (req, res, next) => {
 
     //   creation of a new portfolio
     const { rows: newPortfolio } = await pool.query(
-      'INSERT INTO Portfolio (initial_amount, portfolio_activate, name_of_portfolio, invested_amount,available_amount) VALUES ($1, false, $2, 0, $1)',
-      [initial_amount, name_of_portfolio]
+      "INSERT INTO Portfolio (initial_amount, portfolio_activate, name_of_portfolio, invested_amount,available_amount, user_id_status_request, status) VALUES ($1, false, $2, 0, $1, $3, 'pending_activation')",
+      [initial_amount, name_of_portfolio, userId]
     );
 
     //look for portfolio and save id in a variable
