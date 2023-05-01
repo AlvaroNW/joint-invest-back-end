@@ -20,7 +20,8 @@ const signUpUser = async (req, res, next) => {
     const { rows: theInfo } = await pool.query(myNewQuery, [email]);
 
     const token = jwt.sign({ id: theInfo[0].id }, process.env.JWT_SECRET);
-    return res.status(201).send({ token: token, user_id: theInfo[0].id });
+    console.log(theInfo[0]);
+    return res.status(201).send({ token: token, user: theInfo[0] });
   } catch (e) {
     next(e.message);
   }
@@ -34,7 +35,8 @@ const signInUser = async (req, res, next) => {
     const match = await bcrypt.compare(password, user[0].password);
     if (!match) return next({ message: "Wrong password" });
     const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET);
-    return res.status(201).send({ token: token, user_id: user[0].id });
+    console.log(user[0]);
+    return res.status(201).send({ token: token, user: user[0] });
   } catch (e) {
     next(e.message);
   }
