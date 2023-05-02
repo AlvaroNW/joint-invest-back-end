@@ -17,6 +17,12 @@ const createPortfolio = async (req, res, next) => {
     const { initial_amount, name_of_portfolio, friend_username } =
       req.body;
 
+    const today = new Date();
+    const dateString = today
+      .toISOString()
+      .replace('T', ' ')
+      .replace('Z', ' +0000');
+
     if (!initial_amount || !name_of_portfolio || !friend_username) {
       throw Error();
     }
@@ -46,8 +52,8 @@ const createPortfolio = async (req, res, next) => {
 
     //   creation of a new portfolio
     const { rows: newPortfolio } = await pool.query(
-      "INSERT INTO portfolio (initial_amount, portfolio_activate, name_of_portfolio, invested_amount,available_amount, user_id_status_request, status) VALUES ($1, false, $2, 0, $1, $3, 'pending_activation')",
-      [initial_amount, name_of_portfolio, userIdInt]
+      "INSERT INTO portfolio (initial_amount, portfolio_activate, name_of_portfolio, invested_amount,available_amount, user_id_status_request, status, request_creation_date) VALUES ($1, false, $2, 0, $1, $3, 'pending_activation', $4)",
+      [initial_amount, name_of_portfolio, userIdInt, dateString]
     );
 
     //look for portfolio and save id in a variable

@@ -42,7 +42,7 @@ const setStatus = async (req, res, next) => {
       button_response,
     } = req.body;
 
-    console.log(req.body);
+    const today = new Date();
 
     let newPortfolioStatus = '';
 
@@ -87,12 +87,13 @@ const setStatus = async (req, res, next) => {
     console.log(newPortfolioStatus);
 
     const query =
-      'UPDATE portfolio SET status = $3, user_id_status_request=$2 WHERE id = $1;';
+      'UPDATE portfolio SET status = $3, user_id_status_request=$2, request_creation_date=$4  WHERE id = $1;';
 
     const { rows: portfolioUpdated } = await pool.query(query, [
       portfolio_id,
       user_id_status_request,
       newPortfolioStatus,
+      today,
     ]);
 
     res.json(portfolioUpdated);
