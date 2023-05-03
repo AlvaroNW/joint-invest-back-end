@@ -23,4 +23,14 @@ const getStock = async (req, res, next) => {
   }
 };
 
-export { getStock };
+const logoData = async (req, res, next) => {
+  try {
+    const newQuery = "SELECT * FROM company";
+    const { rows: stockInfo } = await pool.query(newQuery);
+    res.json(stockInfo);
+  } catch (e) {
+    next(e.message);
+  }
+};
+
+export { getStock, logoData };
