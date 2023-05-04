@@ -11,6 +11,12 @@ const getOrders = async (req, res, next) => {
       portfolio_id,
     ]);
 
+    transactionList.map((stock) => {
+      const num = stock.number_of_shares;
+      const pric = stock.price_of_share;
+      stock.buy_sell_value = `${num * pric}`;
+    });
+
     res.json(transactionList);
   } catch (e) {
     next({ message: e.message });
