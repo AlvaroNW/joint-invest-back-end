@@ -19,7 +19,7 @@ export const findAllUserSPortfolios = async (req, res, next) => {
       [userId]
     );
     const { rows: portfolioWalletDetails } = await pool.query(
-      'select wallet.portfolio_id, wallet.company_id, wallet.number_of_shares, usertoportfolio.user_id FROM wallet RIGHT JOIN usertoportfolio ON wallet.portfolio_id = usertoportfolio.portfolio_id WHERE usertoportfolio.user_id=$1 AND wallet.portfolio_id IS NOT NULL',
+      "SELECT t.portfolio_id, t.company_id, usertoportfolio.user_id, t.net_shares AS number_of_shares, t.status FROM usertoportfolio RIGHT JOIN (SELECT company_id, portfolio_id, status, SUM(CASE WHEN type_of_transaction = 'Buy' THEN number_of_shares ELSE -number_of_shares END) AS net_shares FROM transactions WHERE status = 'confirmed' GROUP BY company_id, portfolio_id,status) AS t ON t.portfolio_id = usertoportfolio.portfolio_id WHERE usertoportfolio.user_id=$1",
       [userId]
     );
     return res.json({
