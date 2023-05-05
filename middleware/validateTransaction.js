@@ -66,6 +66,7 @@ const findOneTransaction = async (req, res, next) => {
   }
 };
 
+<<<<<<< HEAD
 const findMatchingPortfolio = async (req, res, next) => {
   try {
     const { portfolio_id } = req.params;
@@ -81,6 +82,23 @@ const findMatchingPortfolio = async (req, res, next) => {
     next(e.message);
   }
 };
+=======
+// const findMatchingPortfolio = async (req, res, next) => {
+//   try {
+//     const { portfolio_id } = req.params;
+//     const findQuery = "SELECT * FROM Transactions WHERE portfolio_id = $1";
+//     const { rows: portfolioFound } = await pool.query(findQuery, [
+//       portfolio_id,
+//     ]);
+//     if (portfolioFound.length == 0)
+//       return next({ message: "portfolio not found" });
+//     return next();
+//   } catch (e) {
+//     console.log(e);
+//     next(e.message);
+//   }
+// };
+>>>>>>> dev
 const enoughMoneyPost = async (req, res, next) => {
   try {
     const { portfolio_id } = req.params;
@@ -136,7 +154,7 @@ export {
   checkEmptyTransactionPost,
   validateTransactionInput,
   findOneTransaction,
-  findMatchingPortfolio,
+  // findMatchingPortfolio,
   enoughMoneyPost,
   enoughMoneyPut,
 };
