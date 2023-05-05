@@ -69,7 +69,7 @@ const findOneTransaction = async (req, res, next) => {
 const findMatchingPortfolio = async (req, res, next) => {
   try {
     const { portfolio_id } = req.params;
-    const findQuery = "SELECT * FROM Transactions WHERE portfolio_id = $1";
+    const findQuery = "SELECT * FROM Portfolio WHERE id = $1";
     const { rows: portfolioFound } = await pool.query(findQuery, [
       portfolio_id,
     ]);
