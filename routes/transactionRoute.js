@@ -8,7 +8,7 @@ import {
   checkEmptyTransactionPost,
   validateTransactionInput,
   findOneTransaction,
-  findMatchingPortfolio,
+  // findMatchingPortfolio,
   enoughMoneyPost,
   enoughMoneyPut,
 } from '../middleware/validateTransaction.js';
@@ -22,7 +22,7 @@ transactionRoute
   .post(
     checkEmptyTransactionPost,
     validateTransactionInput,
-    findMatchingPortfolio,
+    // findMatchingPortfolio,
     enoughMoneyPost,
     postTransaction
   );
