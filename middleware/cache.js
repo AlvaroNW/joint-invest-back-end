@@ -1,6 +1,6 @@
 import Cache from "node-cache";
 //-1 to persist forever
-const cacheLifeInSeconds = 60 * 1.5;
+const cacheLifeInSeconds = 60 * 120;
 
 //This object is the Cache itself, you need to import it to get, set, or check data
 const cryptoCache = new Cache({ stdTTL: cacheLifeInSeconds });
@@ -9,7 +9,6 @@ const cryptoCache = new Cache({ stdTTL: cacheLifeInSeconds });
 const cacheMiddelware = (req, res, next) => {
   try {
     const { cacheKey } = req.body;
-
     if (cryptoCache.has(cacheKey)) {
       console.log("use manual cache! --->", cacheKey);
       return res.send(cryptoCache.get(cacheKey));
