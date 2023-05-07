@@ -13,15 +13,15 @@ const verifyToken = async (req, res, next) => {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     console.log(id);
 
-    if (cryptoCache.has(id.toString)) {
+    if (cryptoCache.has(`verifyUser_${id}`)) {
       console.log("using manual cache!");
-      req.user = cryptoCache.get(id.toString());
+      req.user = cryptoCache.get(`verifyUser_${id}`);
       next();
     }
     const myQuery = "SELECT * FROM Users WHERE id = $1";
     const { rows: user } = await pool.query(myQuery, [id]);
     console.log("using DB call!");
-    cryptoCache.set(id.toString(), user[0]);
+    cryptoCache.set(`verifyUser_${id}`, user[0]);
     req.user = user[0];
     next();
   } catch (e) {
