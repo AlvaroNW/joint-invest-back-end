@@ -53,7 +53,6 @@ const getUsers = async (req, res, next) => {
 };
 
 const getOneUser = (req, res) => {
-  console.log(req.user);
   res.json(req.user);
 };
 

@@ -1,11 +1,12 @@
-import pool from '../DB/client.js';
+import pool from "../DB/client.js";
+import { cryptoCache } from "../middleware/cache.js";
 
 const getTransactions = async (req, res, next) => {
   try {
     const { portfolio_id } = req.params;
 
     const getStocksDisplay =
-      'SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY creating_date DESC) AS rn FROM transactions WHERE portfolio_id = $1) t WHERE rn = 1';
+      "SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY creating_date DESC) AS rn FROM transactions WHERE portfolio_id = $1) t WHERE rn = 1";
     const { rows: newQuery } = await pool.query(getStocksDisplay, [
       portfolio_id,
     ]);
@@ -50,7 +51,7 @@ const putTransaction = async (req, res, next) => {
     const { portfolio_id, transaction_id } = req.params;
     const { transaction_status, current_price_of_share } = req.body;
     const user = 1;
-    if (transaction_status == 'canceled') {
+    if (transaction_status == "canceled") {
       const queryUpdate =
         "UPDATE Transactions SET status = 'canceled' WHERE id = $1 AND portfolio_id = $2 RETURNING *";
       const { rows: updatedRow } = await pool.query(queryUpdate, [
@@ -59,9 +60,9 @@ const putTransaction = async (req, res, next) => {
       ]);
       res.status(200).json(updatedRow);
     }
-    if (transaction_status == 'confirmed') {
+    if (transaction_status == "confirmed") {
       const callQuery =
-        'SELECT * FROM Transactions WHERE portfolio_id = $1 AND id = $2';
+        "SELECT * FROM Transactions WHERE portfolio_id = $1 AND id = $2";
       const { rows: myUpdates } = await pool.query(callQuery, [
         portfolio_id,
         transaction_id,
@@ -75,22 +76,18 @@ const putTransaction = async (req, res, next) => {
 
       const newAmount = amountBuyOrSell * current_price_of_share;
       console.log({ newAmount: newAmount });
-      const writeToPortfolio =
-        'SELECT * FROM Portfolio WHERE id = $1';
-      const { rows: getPortfolio } = await pool.query(
-        writeToPortfolio,
-        [portfolio_id]
-      );
-      const {
-        invested_amount: invAmount,
-        available_amount: availAmount,
-      } = getPortfolio[0];
+      const writeToPortfolio = "SELECT * FROM Portfolio WHERE id = $1";
+      const { rows: getPortfolio } = await pool.query(writeToPortfolio, [
+        portfolio_id,
+      ]);
+      const { invested_amount: invAmount, available_amount: availAmount } =
+        getPortfolio[0];
 
-      if (buyOrSell == 'Buy') {
+      if (buyOrSell == "Buy") {
         const newInvestedAmount = invAmount + newAmount;
         const newAvailableAmount = availAmount - newAmount;
         const portfolioQuery =
-          'UPDATE Portfolio SET invested_amount = $1, available_amount = $2 WHERE id = $3 RETURNING *';
+          "UPDATE Portfolio SET invested_amount = $1, available_amount = $2 WHERE id = $3 RETURNING *";
         await pool.query(portfolioQuery, [
           newInvestedAmount,
           newAvailableAmount,
@@ -100,18 +97,17 @@ const putTransaction = async (req, res, next) => {
         const newInvestedAmount = invAmount - newAmount;
         const newAvailableAmount = availAmount + newAmount;
         const portfolioQuery =
-          'UPDATE Portfolio SET invested_amount = $1, available_amount = $2 WHERE id = $3 RETURNING *';
+          "UPDATE Portfolio SET invested_amount = $1, available_amount = $2 WHERE id = $3 RETURNING *";
         await pool.query(portfolioQuery, [
           newInvestedAmount,
           newAvailableAmount,
           portfolio_id,
         ]);
       }
-      const checkPortfolio = 'SELECT * FROM Portfolio WHERE id = $1';
-      const { rows: showPortfolio } = await pool.query(
-        checkPortfolio,
-        [portfolio_id]
-      );
+      const checkPortfolio = "SELECT * FROM Portfolio WHERE id = $1";
+      const { rows: showPortfolio } = await pool.query(checkPortfolio, [
+        portfolio_id,
+      ]);
 
       const queryUpdate =
         "UPDATE Transactions SET status = 'confirmed', price_of_share = $1 WHERE id = $2 AND portfolio_id = $3 RETURNING *";
@@ -136,16 +132,18 @@ const getPendingTransactions = async (req, res, next) => {
     const { portfolio_id } = req.params;
     const user_id = 1;
 
-    const queryPortfolio = 'SELECT * FROM Portfolio WHERE id = $1';
+    if (cryptoCache.has(`portfolioTransactionData_${portfolio_id}`)) {
+      console.log("using manual cache! --> getPendingTransactions");
+      res.json(cryptoCache.get(`portfolioTransactionData_${portfolio_id}`));
+    }
+    const queryPortfolio = "SELECT * FROM Portfolio WHERE id = $1";
     const { rows: portfolioData } = await pool.query(queryPortfolio, [
       portfolio_id,
     ]);
 
     const queryStocks =
       "SELECT sell.portfolio_id AS portfolio_id, sell.company_id, sell.average_price_sell, sell.number_of_shares_sell, buy.average_price_buy, buy.number_of_shares_buy FROM (SELECT portfolio_id, company_id, SUM(price_of_share * number_of_shares)/SUM(number_of_shares) as average_price_sell, SUM(number_of_shares) as number_of_shares_sell FROM Transactions WHERE type_of_transaction = 'Sell' AND portfolio_id = $1 AND status = 'confirmed' GROUP BY portfolio_id, company_id) as sell LEFT JOIN (SELECT portfolio_id, company_id, SUM(price_of_share * number_of_shares)/SUM(number_of_shares) as average_price_buy, SUM(number_of_shares) as number_of_shares_buy FROM Transactions WHERE type_of_transaction = 'Buy' AND portfolio_id = $1 AND status = 'pending' GROUP BY portfolio_id, company_id) as buy ON sell.portfolio_id = buy.portfolio_id AND sell.company_id = buy.company_id UNION SELECT buy.portfolio_id, buy.company_id, sell.average_price_sell, sell.number_of_shares_sell, buy.average_price_buy, buy.number_of_shares_buy FROM (SELECT portfolio_id, company_id, SUM(price_of_share * number_of_shares)/SUM(number_of_shares) as average_price_sell, SUM(number_of_shares) as number_of_shares_sell FROM Transactions WHERE type_of_transaction = 'Sell' AND portfolio_id = $1 AND status = 'confirmed' GROUP BY portfolio_id, company_id) as sell RIGHT JOIN (SELECT portfolio_id, company_id, SUM(price_of_share * number_of_shares)/SUM(number_of_shares) as average_price_buy, SUM(number_of_shares) as number_of_shares_buy FROM Transactions WHERE type_of_transaction = 'Buy' AND portfolio_id = $1 AND status = 'confirmed' GROUP BY portfolio_id, company_id) as buy ON sell.portfolio_id = buy.portfolio_id AND sell.company_id = buy.company_id WHERE sell.portfolio_id IS NULL;";
-    const { rows: stockData } = await pool.query(queryStocks, [
-      portfolio_id,
-    ]);
+    const { rows: stockData } = await pool.query(queryStocks, [portfolio_id]);
 
     stockData.map((stock) => {
       const buyn = stock.number_of_shares_buy;
@@ -157,6 +155,8 @@ const getPendingTransactions = async (req, res, next) => {
       overview: portfolioData,
       stocks: stockData,
     };
+    console.log("using DB call! --> getPendingTransactions");
+    cryptoCache.set(`portfolioTransactionData_${portfolio_id}`, portfolioInfo);
     res.json(portfolioInfo);
   } catch (e) {
     next(e.message);
