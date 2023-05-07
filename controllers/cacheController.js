@@ -7,6 +7,7 @@ const middlewareToGetAPIcalls = async (req, res, next) => {
     const { data } = await axios.get(remoteUrl);
     cryptoCache.set(cacheKey, data);
     console.log("using external api call -->", cacheKey);
+    console.log(data);
     res.send(data);
   } catch (e) {
     next({ message: e.message });
