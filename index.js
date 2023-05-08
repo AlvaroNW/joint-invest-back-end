@@ -11,6 +11,7 @@ import userRoute from "./routes/userRoutes.js";
 import { logoData } from "./controllers/stockDetailController.js";
 import { cacheMiddelware } from "./middleware/cache.js";
 import { middlewareToGetAPIcalls } from "./controllers/cacheController.js";
+import { getPortfolioPending } from "./controllers/portfolioController.js";
 
 const app = Express();
 
@@ -22,6 +23,7 @@ const port = 3000;
 
 app.use("/api/order_book", orderbookRoute);
 app.use("/api/portfolio", portfolioRoute);
+app.use("/api/pending/:portfolio_id", getPortfolioPending);
 app.use("/api/overview", overviewRoutes);
 app.use("/api/transaction", transactionRoute);
 app.use("/api/creation_portfolio", portfolioCreationRoutes);
