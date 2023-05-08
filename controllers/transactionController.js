@@ -132,10 +132,10 @@ const getPendingTransactions = async (req, res, next) => {
     const { portfolio_id } = req.params;
     const user_id = 1;
 
-    if (cryptoCache.has(`portfolioTransactionData_${portfolio_id}`)) {
-      console.log("using manual cache! --> getPendingTransactions");
-      res.json(cryptoCache.get(`portfolioTransactionData_${portfolio_id}`));
-    }
+    // if (cryptoCache.has(`portfolioTransactionData_${portfolio_id}`)) {
+    //   console.log("using manual cache! --> getPendingTransactions");
+    //   res.json(cryptoCache.get(`portfolioTransactionData_${portfolio_id}`));
+    // }
     const queryPortfolio = "SELECT * FROM Portfolio WHERE id = $1";
     const { rows: portfolioData } = await pool.query(queryPortfolio, [
       portfolio_id,
@@ -155,8 +155,8 @@ const getPendingTransactions = async (req, res, next) => {
       overview: portfolioData,
       stocks: stockData,
     };
-    console.log("using DB call! --> getPendingTransactions");
-    cryptoCache.set(`portfolioTransactionData_${portfolio_id}`, portfolioInfo);
+    // console.log("using DB call! --> getPendingTransactions");
+    // cryptoCache.set(`portfolioTransactionData_${portfolio_id}`, portfolioInfo);
     res.json(portfolioInfo);
   } catch (e) {
     next(e.message);

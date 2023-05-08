@@ -1,6 +1,6 @@
 import Cache from "node-cache";
 //-1 to persist forever
-const cacheLifeInSeconds = 60 * 120;
+const cacheLifeInSeconds = 60 * 2;
 
 //This object is the Cache itself, you need to import it to get, set, or check data
 const cryptoCache = new Cache({ stdTTL: cacheLifeInSeconds });
