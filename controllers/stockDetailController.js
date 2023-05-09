@@ -1,4 +1,5 @@
 import pool from "../DB/client.js";
+import { cryptoCache } from "../middleware/cache.js";
 
 const getStock = async (req, res, next) => {
   try {
@@ -17,7 +18,7 @@ const getStock = async (req, res, next) => {
       stock.current_number_of_stocks = `${buyn - selln}`;
     });
 
-    res.json(stockData);
+    return res.json(stockData);
   } catch (e) {
     next(e.message);
   }
@@ -25,9 +26,15 @@ const getStock = async (req, res, next) => {
 
 const logoData = async (req, res, next) => {
   try {
+    if (cryptoCache.has("myLogoData")) {
+      console.log("manual cache --> LogoData");
+      return res.json(cryptoCache.get("myLogoData"));
+    }
     const newQuery = "SELECT * FROM company";
     const { rows: stockInfo } = await pool.query(newQuery);
-    res.json(stockInfo);
+    console.log("DB call --> LogoData");
+    cryptoCache.set("myLogoData", stockInfo);
+    return res.json(stockInfo);
   } catch (e) {
     next(e.message);
   }
